@@ -1,6 +1,6 @@
-## Never too Prim to Swim
+# Never too Prim to Swim
 
-[![arXiv](https://img.shields.io/badge/arXiv-2409.02424-b31b1b.svg)](https://arxiv.org/abs/2409.02444)  [![WebSite](https://img.shields.io/badge/PDF-Supp_Material-77DDFF.svg)](https://github.com/360ZMEM/USV-AUV-colab/blob/main/paper/SUPP.pdf) [![WebSite](https://img.shields.io/github/last-commit/360ZMEM/USV-AUV-Colab?color=green)](https://360zmem.github.io/USV-AUV-Colab)
+[![arXiv](https://img.shields.io/badge/arXiv-2503.00527-b31b1b.svg)](https://arxiv.org/abs/2503.00527)  [![WebSite](https://img.shields.io/badge/Github_Page-Supp_Material-77DDFF.svg)](https://360zmem.github.io/AUV-RSControl/) [![WebSite](https://img.shields.io/github/last-commit/360ZMEM/USV-AUV-Colab?color=green)](https://360zmem.github.io/USV-AUV-Colab)
 
 This repository contains the Simulator and Supplementary Materials for the paper "Never too Prim to Swim: An LLM-Enhanced RL-based Adaptive S-Surface Controller for AUVs under Extreme Sea Conditions".
 
