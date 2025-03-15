@@ -58,7 +58,7 @@ class Env(object):
         self.state = [np.zeros(self.state_dim)] * self.N_AUV
         self.rewards = []
         self.xy = np.zeros((self.N_AUV, 3))
-        self.xy_asv = np.zeros(3)
+        self.xy_usv = np.zeros(3)
         self.obs_xy = np.zeros((self.N_AUV, 3))
         self.vxy = np.zeros((self.N_AUV, 3)) 
         self.dis = np.zeros((self.N_AUV, self.N_POI))
@@ -116,16 +116,16 @@ class Env(object):
         if self.simulate_usbl:
             SEARCH_SPACE = 2
             tol = 1e-2 if self.Ft == 0 else 5e-2
-            x_min = 0 if self.Ft == 0 else max(0, self.xy_asv[0] - SEARCH_SPACE)
-            x_max = self.border[0] if self.Ft == 0 else min(self.border[0], self.xy_asv[0] + SEARCH_SPACE)
-            y_min = 0 if self.Ft == 0 else max(0, self.xy_asv[1] - SEARCH_SPACE)
-            y_max = self.border[1] if self.Ft == 0 else min(self.border[1], self.xy_asv[1] + SEARCH_SPACE)
-            self.xyz_asv[:2] = usv_usbl.calcposit_USV(bounds = [(x_min, x_max), (y_min, y_max)], tol=tol, pos_auv = self.xy)
+            x_min = 0 if self.Ft == 0 else max(0, self.xy_usv[0] - SEARCH_SPACE)
+            x_max = self.border[0] if self.Ft == 0 else min(self.border[0], self.xy_usv[0] + SEARCH_SPACE)
+            y_min = 0 if self.Ft == 0 else max(0, self.xy_usv[1] - SEARCH_SPACE)
+            y_max = self.border[1] if self.Ft == 0 else min(self.border[1], self.xy_usv[1] + SEARCH_SPACE)
+            self.xyz_usv[:2] = usv_usbl.calcposit_USV(bounds = [(x_min, x_max), (y_min, y_max)], tol=tol, pos_auv = self.xy)
         for i in range(self.N_AUV):
             state = []
             if self.simulate_usbl:
-                usv_auv_diff = self.usbl.calcPosit(self.xyz_asv - self.xy[i], idx = i)
-                self.obs_xy[i] = self.xyz_asv - usv_auv_diff
+                usv_auv_diff = self.usbl.calcPosit(self.xyz_usv - self.xy[i], idx = i)
+                self.obs_xy[i] = self.xyz_usv - usv_auv_diff
             else:
                 self.obs_xy[i] = self.xy[i]
         # then get locs

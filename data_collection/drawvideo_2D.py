@@ -9,7 +9,7 @@ import numpy as np
 from record import Record_object
 import pickle
 import cv2
-import data_collection.jonswap_wave_current as wave
+import jonswap_wave_current as wave
 import joblib
 from matplotlib.colors import Normalize
 from matplotlib.legend_handler import HandlerTuple
