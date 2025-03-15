@@ -1,0 +1,9 @@
+numpy
+torch
+matplotlib
+tqdm
+colour
+trimesh
+pytest
+opencv-python
+pickle
