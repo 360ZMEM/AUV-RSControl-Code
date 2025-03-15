@@ -46,7 +46,7 @@ parser.add_argument('--control_mode', type=str, default="Ssurface_nref_nv")
 parser.add_argument('--reward_ratio', type=float, default=1e4)
 parser.add_argument('--k_yaw', type=str, default='[2, 1, 0.01]',help='Input list of length 2 (S-Surface) or 3 (PID)')
 parser.add_argument('--k_depth', type=str, default='[1, 1, 0.01]',help='Input list of length 2 (S-Surface) or 3 (PID)')
-parser.add_argument('--wave',action='store_true',help='Simualte JONSWAP wave and current.')
+parser.add_argument('--wave',action='store_false',help='Simualte JONSWAP wave and current.')
 parser.add_argument('--usbl',action='store_true',help='Simualte USV-AUV collaboration and USBL positioning.')
 
 
@@ -129,9 +129,7 @@ def train():
             formatted_time = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
             with open(REC_PATH + f'/TRAIN_{ep}_TIME{formatted_time}.pkl', 'wb') as f:
                 pickle.dump(record_object, f)
-                
-        print(f'\rEP {ep} | ', end='')
-        output_str = record_object.print_metric()
+        output_str = f'\rEP {ep} | ' + record_object.print_metric()
         print(output_str)
         with open(LOG_PATH + f'train_{init_formatted_time}.txt', 'a') as f:
             f.write(output_str + '\n')

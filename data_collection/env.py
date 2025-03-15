@@ -31,15 +31,6 @@ class Env(object):
         self.simulate_wave = args.wave; self.simulate_usbl = args.usbl
         self.usbl = usv_usbl.USBL()
         self.reward_ok = True
-        try:
-            self.spec_r = importlib.util.spec_from_file_location(
-                "r",
-                f"{ROOT_PATH}/reward.py",
-            )
-            self.module_r = importlib.util.module_from_spec(self.spec_r)
-            self.spec_r.loader.exec_module(self.module_r)
-        except:
-            self.reward_ok = False
         # NOTE NEW
         self.X_min = 0
         self.Y_min = 0
@@ -120,12 +111,12 @@ class Env(object):
             x_max = self.border[0] if self.Ft == 0 else min(self.border[0], self.xy_usv[0] + SEARCH_SPACE)
             y_min = 0 if self.Ft == 0 else max(0, self.xy_usv[1] - SEARCH_SPACE)
             y_max = self.border[1] if self.Ft == 0 else min(self.border[1], self.xy_usv[1] + SEARCH_SPACE)
-            self.xyz_usv[:2] = usv_usbl.calcposit_USV(bounds = [(x_min, x_max), (y_min, y_max)], tol=tol, pos_auv = self.xy)
+            self.xy_usv[:2] = usv_usbl.calcposit_USV(bounds = [(x_min, x_max), (y_min, y_max)], tol=tol, pos_auv = self.xy)
         for i in range(self.N_AUV):
             state = []
             if self.simulate_usbl:
-                usv_auv_diff = self.usbl.calcPosit(self.xyz_usv - self.xy[i], idx = i)
-                self.obs_xy[i] = self.xyz_usv - usv_auv_diff
+                usv_auv_diff = self.usbl.calcPosit(self.xy_usv - self.xy[i], idx = i)
+                self.obs_xy[i] = self.xy_usv - usv_auv_diff
             else:
                 self.obs_xy[i] = self.xy[i]
         # then get locs
@@ -275,7 +266,7 @@ class Env(object):
                 self.TL[i] = True
                 data_rate[i] = max(self.calcRate(self.f,self.b,self.dis [i,self.idx_target[i]],0),self.calcRate(self.f,self.b,self.dis[i,self.idx_target[i]],1))
                 self.b_S[self.idx_target[i]] = 0
-            self.rewards = self.spec_r.compute_reward(self) if self.reward_ok == True else self.compute_reward()
+            self.rewards = self.compute_reward()
         return self.state, self.rewards, self.TL, data_rate, self.ec, self.crash
     
     def calc_dist(self,idx):
@@ -306,28 +297,39 @@ class Env(object):
     
     def compute_reward(self): # oracle
         reward = np.zeros(self.N_AUV)
+        # waypoint serving
+        w_waypoint = 4000
+        w_collision = 500
+        w_border_xy = 6
+        w_border_z = 12
+        w_ec = 0.1
+
         for i in range(self.N_AUV):
-
+            # distance to target waypoint
             dist_to_target = np.linalg.norm(self.xy[i] - self.target_Pcenter[i]) / np.linalg.norm(self.border)
-            reward[i] += (-5000 * dist_to_target - self.FX[i] * 800 -self.N_DO * 50)
+            reward[i] += -w_waypoint * dist_to_target
 
+            # distance between AUVs (for collision avoidance)
             for j in range(i+1,self.N_AUV):
-                dist_between_auvs = np.linalg.norm(self.xy[j] - self.xy[i])
-                if dist_between_auvs < 12:
-                    reward[i] -= 2 * ((12 - dist_between_auvs) ** 1.2)
-            # rew
+                dist_between_auvs = np.linalg.norm(self.xy[j] - self.xy[i]) / np.linalg.norm(self.border)
+                if dist_between_auvs < self.safe_dist:
+                    reward[i] -= w_collision * ((self.safe_dist - dist_between_auvs))
+            
+            # target waypoint serving reward (Sparse)
             if self.TL[i] > 0:
-                reward[i] += 100
+                reward[i] += w_waypoint
 
-            reward[i] -= 0.05 * self.ec[i] 
+            reward[i] -= w_ec * self.ec[i] # Energy consumption (Sparse)
+
+            reward[i] -= w_border_xy * self.FX[i] # Penalty of crossing the border (Sparse)
 
             border_dist = self.calc_AUV_border_dist(i)
             for b in border_dist:
                 if b < 1.5 * self.safe_dist:
-                    reward[i] -= 6 * ((1.5 * self.safe_dist - b))
+                    reward[i] -= w_border_xy * ((1.5 * self.safe_dist - b)) # x / y constraint
                     
             terrain_dist, dir_  = self.calc_AUV_terrain_dist(i)
-            height_dist = self.safe_dist if dir_ else 1.5 * self.safe_dist
+            height_dist = self.safe_dist if dir_ else 2 * self.safe_dist
             if terrain_dist < height_dist:
-                reward[i] -= 12 * ((height_dist - terrain_dist))
+                reward[i] -= w_border_z * ((height_dist - terrain_dist)) # z constraint
         return reward / 100 # normalize

@@ -33,7 +33,7 @@ os.chdir(ROOT_PATH)
 if not os.path.exists('temp_images'):
     os.makedirs('temp_images')
 
-dirname = 'record_object' + args.mode
+dirname = 'record_' + args.mode
 fname = args.fname
 PREVIEW_NUM = args.preview
 
@@ -106,8 +106,9 @@ def gen_pic(frame_idx):
         Ny = int((border[1] - 0) / 1.5)
         X_ = np.linspace(0, border[0], Nx); Y_ = np.linspace(0, border[0], Ny)
         X,Y = np.meshgrid(X_,Y_)
-
-    surf2 = ax.plot_surface(X, Y, Z, linewidth=0, alpha=.6, cmap='ocean', vmin = -10, vmax = 8)
+        surf2 = ax.plot_surface(X, Y, Z, linewidth=0, alpha=.6, cmap='ocean', vmin = -10, vmax = 8)
+        xyz_usv[eframe,2] = wave.get_pointwave(Z, border[0], border[1], xyz_usv[eframe,0], xyz_usv[eframe,1]) * 0.25
+    
     tr = terrain.terrain; x_tr = tr.shape[0]; y_tr = tr.shape[1];
     X_tr = np.linspace(0, border[0], x_tr,endpoint=False); Y_tr = np.linspace(0, border[1], y_tr,endpoint=False)
     X_tr_, Y_tr_ = np.meshgrid(Y_tr, X_tr)
@@ -141,9 +142,6 @@ def gen_pic(frame_idx):
 
     eframe = frame_idx * SP
 
-
-    xyz_usv[eframe,2] = wave.get_pointwave(Z, border[0], border[1], xyz_usv[eframe,0], xyz_usv[eframe,1]) * 0.25
-
     usv = ax.plot(xyz_usv[:eframe,0],xyz_usv[:eframe,1],xyz_usv[:eframe,2], lw=1.4, color=xy_color[-1], label=f'USV')
 
     ax.scatter(xyz_usv[0,0],xyz_usv[0,1],xyz_usv[0,2],marker='>',s=55, color=xy_color[-1], edgecolors='k', linewidths=1.0)
@@ -175,7 +173,8 @@ def gen_pic(frame_idx):
 
         hover_point = np.array(record_object.hover_point[j]); sidx = np.array(record_object.sidx[j])
 
-        hover_point = xy[sidx[sidx <= eframe],j,:]
+        if len(sidx) != 0:
+            hover_point = xy[sidx[sidx <= eframe],j,:]
 
         if len(hover_point) != 0:
             ax.scatter(hover_point[:,0],hover_point[:,1],-hover_point[:,2],marker='o',s=180,color=xy_color[j],edgecolors=xy_color[j],alpha=0.45)

@@ -36,7 +36,7 @@ os.chdir(ROOT_PATH)
 if not os.path.exists('temp_images'):
     os.makedirs('temp_images')
 
-dirname = 'record_object' + args.mode
+dirname = 'record_' + args.mode
 fname = args.fname
 PREVIEW_NUM = args.preview
 
@@ -65,7 +65,7 @@ except:
 start_time = time.time()
 
 def gen_pic(frame_idx):
-    fig = plt.figure(figsize=(4, 3.2))
+    fig = plt.figure(figsize=(4.2, 3.8))
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('x / m')
     ax.set_ylabel('y / m')
@@ -94,20 +94,20 @@ def gen_pic(frame_idx):
 
     eframe = frame_idx * SP
 
-
-    z = 10
-    X,Y = np.meshgrid(X_,Y_)
-    U, V = np.zeros_like(X), np.zeros_like(Y) 
-    U, V = wave.calculate_current(phase, z, h=40)
-    step_size = [6,6] 
-    X = X[::step_size[0],::step_size[1]]; Y = Y[::step_size[0],::step_size[1]]; 
-    U = U[::step_size[0],::step_size[1]]; V = V[::step_size[0],::step_size[1]]; 
-    speed = np.sqrt(U**2 + V**2); speed_new = speed
-    norm = Normalize(vmin=speed_new.min(), vmax=speed_new.max())
-    colors = cm.winter(norm(speed_new.flatten()))
-    quiver = ax.quiver(X.flatten(), Y.flatten(), 
-                    U.flatten(), V.flatten(),
-                    color=colors[:, :3], linewidths=1.2,  alpha=0.8,scale_units='inches',width=0.003,scale=15) 
+    if record_object.mode[0]:
+        z = 10
+        X,Y = np.meshgrid(X_,Y_)
+        U, V = np.zeros_like(X), np.zeros_like(Y) 
+        U, V = wave.calculate_current(phase, z, h=40)
+        step_size = [6,6] 
+        X = X[::step_size[0],::step_size[1]]; Y = Y[::step_size[0],::step_size[1]]; 
+        U = U[::step_size[0],::step_size[1]]; V = V[::step_size[0],::step_size[1]]; 
+        speed = np.sqrt(U**2 + V**2); speed_new = speed
+        norm = Normalize(vmin=speed_new.min(), vmax=speed_new.max())
+        colors = cm.winter(norm(speed_new.flatten()))
+        quiver = ax.quiver(X.flatten(), Y.flatten(), 
+                        U.flatten(), V.flatten(),
+                        color=colors[:, :3], linewidths=1.2,  alpha=0.8,scale_units='inches',width=0.003,scale=15) 
 
 
     auv = []
@@ -119,11 +119,12 @@ def gen_pic(frame_idx):
 
     ax.scatter(xy[eframe,j,0],xy[eframe,j,1],marker='o',s=99, color=xy_color[j], edgecolors='k', linewidths=1.0)
 
-    hover_point = np.array(record_object.hover_point[j]); sidx = np.array(record_object.sidx[j])
+    hover_point = np.array(record_object.hover_point[j]); sidx = np.array(record_object.sidx[j]); hover_point_next = []
 
-    hover_point = xy[sidx[sidx <= eframe],j,:]
+    if len(sidx) != 0:
+        hover_point = xy[sidx[sidx <= eframe],j,:]
 
-    hover_point_next = xy[sidx[sidx > eframe],j,:]
+        hover_point_next = xy[sidx[sidx > eframe],j,:]
 
     alpha1 = int(frame_idx // 12) % 2
     alpha2 = (24 + 1.5 * (-12 * (alpha1) + (2 * alpha1 - 1) * (frame_idx % 12)) ) / 24
