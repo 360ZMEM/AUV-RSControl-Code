@@ -73,18 +73,17 @@ xy_color = ['#006FBF','#BF006F','#002222']
 N_AUV = xy.shape[1]
 
 ang_auv = []
-xyz_usv = np.array(record_object.pos_usv)
-sp = xyz_usv.shape[0]
-W = 100 # smoothed traj.
-xyz_usv[:,0] = np.array([np.mean(xyz_usv[i:i+W,0]) for i in range(sp)])
-xyz_usv[:,1] = np.array([np.mean(xyz_usv[i:i+W,1]) for i in range(sp)])
-
-hov_sidx = [[] for _ in range(N_AUV)]
-
 for i in range(N_AUV):
-    ang_auv.append(get_angle_from_traj(xy[:,i,:]))
+        ang_auv.append(get_angle_from_traj(xy[:,i,:]))
 
-ang_usv = get_angle_from_traj(xyz_usv) # get yaw angle for illustration
+if record_object.mode[1]:
+    xyz_asv = np.array(record_object.pos_usv)
+    sp = xyz_asv.shape[0]
+    W = 100 # smoothed traj.
+    xyz_asv[:,0] = np.array([np.mean(xyz_asv[i:i+W,0]) for i in range(sp)])
+    xyz_asv[:,1] = np.array([np.mean(xyz_asv[i:i+W,1]) for i in range(sp)])
+    hov_sidx = [[] for _ in range(N_AUV)]
+    ang_asv = get_angle_from_traj(xyz_asv) # get yaw angle for illustration
 
 try:
     rand_phase = record_object.rand_phase
@@ -107,8 +106,9 @@ def gen_pic(frame_idx):
         X_ = np.linspace(0, border[0], Nx); Y_ = np.linspace(0, border[0], Ny)
         X,Y = np.meshgrid(X_,Y_)
         surf2 = ax.plot_surface(X, Y, Z, linewidth=0, alpha=.6, cmap='ocean', vmin = -10, vmax = 8)
-        xyz_usv[eframe,2] = wave.get_pointwave(Z, border[0], border[1], xyz_usv[eframe,0], xyz_usv[eframe,1]) * 0.25
-    
+        if record_object.mode[1]:
+            xyz_asv[eframe,2] = wave.get_pointwave(Z, border[0], border[1], xyz_asv[eframe,0], xyz_asv[eframe,1]) * 0.25
+        
     tr = terrain.terrain; x_tr = tr.shape[0]; y_tr = tr.shape[1];
     X_tr = np.linspace(0, border[0], x_tr,endpoint=False); Y_tr = np.linspace(0, border[1], y_tr,endpoint=False)
     X_tr_, Y_tr_ = np.meshgrid(Y_tr, X_tr)
@@ -142,15 +142,16 @@ def gen_pic(frame_idx):
 
     eframe = frame_idx * SP
 
-    usv = ax.plot(xyz_usv[:eframe,0],xyz_usv[:eframe,1],xyz_usv[:eframe,2], lw=1.4, color=xy_color[-1], label=f'USV')
-
-    ax.scatter(xyz_usv[0,0],xyz_usv[0,1],xyz_usv[0,2],marker='>',s=55, color=xy_color[-1], edgecolors='k', linewidths=1.0)
 
     if record_object.mode[1]:
 
-        USV_rotation_matrix = euler_rotation_matrix(ang_usv[:,eframe])
+        asv = ax.plot(xyz_asv[:eframe,0],xyz_asv[:eframe,1],xyz_asv[:eframe,2], lw=1.4, color=xy_color[-1], label=f'ASV')
 
-        USV_vertices = USV_meshv @ USV_rotation_matrix.T + xyz_usv[eframe] + np.array([0,0,1.99])
+        ax.scatter(xyz_asv[0,0],xyz_asv[0,1],xyz_asv[0,2],marker='>',s=55, color=xy_color[-1], edgecolors='k', linewidths=1.0)
+
+        USV_rotation_matrix = euler_rotation_matrix(ang_asv[:,eframe])
+
+        USV_vertices = USV_meshv @ USV_rotation_matrix.T + xyz_asv[eframe] + np.array([0,0,1.99])
 
         mesh_color_USV = generate_mesh_colors(USV_vertices, USV_meshf,input_color=xy_color[-1],lum_ratio=0.899)
 
@@ -172,7 +173,6 @@ def gen_pic(frame_idx):
         ax.add_collection3d(Poly3DCollection(AUV_vertices[AUV_meshf], facecolors = mesh_color_AUV)) # , antialiased=False
 
         hover_point = np.array(record_object.hover_point[j]); sidx = np.array(record_object.sidx[j])
-
         if len(sidx) != 0:
             hover_point = xy[sidx[sidx <= eframe],j,:]
 
@@ -209,6 +209,7 @@ def gen_pic(frame_idx):
 
     plt.close()
 
+gen_pic(0)
 if PREVIEW_NUM >= 0:
     gen_pic(PREVIEW_NUM)
 else:

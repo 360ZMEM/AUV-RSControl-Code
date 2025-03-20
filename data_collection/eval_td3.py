@@ -133,5 +133,5 @@ if __name__ == "__main__":
     action_dim = 3
     agents = [TD3(state_dim, action_dim) for _ in range(N_AUV)]
     for i in range(N_AUV):
-        agents[i].load(SAVE_PATH, args.load_ep, idx=1)
+        agents[i].load(SAVE_PATH, args.load_ep, idx=i)
     eval()
