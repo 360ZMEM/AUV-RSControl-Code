@@ -1,6 +1,6 @@
 # Never too Prim to Swim
 
-[![arXiv](https://img.shields.io/badge/arXiv-2503.00527-b31b1b.svg)](https://arxiv.org/abs/2503.00527)  [![WebSite](https://img.shields.io/badge/Github_Page-Supp_Material-77DDFF.svg)](https://360zmem.github.io/AUV-RSControl/) [![WebSite](https://img.shields.io/github/last-commit/360ZMEM/USV-AUV-Colab?color=green)](https://360zmem.github.io/AUV-RSControl-Code)
+[![arXiv](https://img.shields.io/badge/arXiv-2503.00527-b31b1b.svg)](https://arxiv.org/abs/2503.00527)  [![WebSite](https://img.shields.io/badge/Github_Page-Supp_Material-77DDFF.svg)](https://360zmem.github.io/AUV-RSControl/) [![WebSite](https://img.shields.io/github/last-commit/360ZMEM/AUV-RSControl-Code?color=green)](https://360zmem.github.io/AUV-RSControl-Code)
 
 This repository contains the Simulator and Supplementary Materials for the paper "Never too Prim to Swim: An LLM-Enhanced RL-based Adaptive S-Surface Controller for AUVs under Extreme Sea Conditions".
 
@@ -37,7 +37,7 @@ We provide implementations for two high-level underwater tasks described in the 
 Execute training with:
 
 ```bash
-python train_td3.py --wave True --usbl True
+python train_td3.py --wave --usbl
 ```
 
 - `--wave`: Enables JONSWAP wave simulation.
