@@ -82,7 +82,7 @@ Both phases generate visualization files and logs:
 
 ## Acknowledgement
 
-The 6-DOF simulator is adapted from the [Python Vehicle Simulator](https://github.com/cybergalactic/PythonVehicleSimulator)。
+The 6-DOF simulator is adapted from the [Python Vehicle Simulator](https://github.com/cybergalactic/PythonVehicleSimulator).
 
 ## Citation
 
