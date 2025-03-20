@@ -69,7 +69,7 @@ Both phases generate visualization files and logs:
   ```bash  
   python genvideo_2D.py --preview -1 --fname XXX --mode train --speed 5  
   ```
-  - `--preview N`: Previews `N` frames (negative values skip preview).  
+  - `--preview N`: Previews `N`-th frames (negative values skip preview).  
   - `--fname`: Input filename (without `.pkl`).  
   - `--speed`: Playback speed multiplier.  
   Output: `output_2D.mp4` (H.264/AVC, 10 Mbps). Use FFmpeg for further format conversion.  
