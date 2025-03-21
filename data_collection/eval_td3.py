@@ -97,7 +97,7 @@ def eval():
             for i in range(N_AUV):
                 iact = agents[i].select_action(state[i])
                 act.append(iact)
-            env.posit_change(act, hovers, rand_phase = rand_phase, control=args.control_mode)
+            env.posit_change(act, hovers, k_yaw=k_yaw,k_depth=k_depth,rand_phase = rand_phase, control=args.control_mode)
             state_,rewards,Done,data_rate,ec,cs = env.step(hovers)
             for i in range(N_AUV):
                 if mode[i] == 0:

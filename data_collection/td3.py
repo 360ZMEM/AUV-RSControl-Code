@@ -180,16 +180,16 @@ class TD3(object):
         ep = "_" + str(ep)
         idx = "_" + str(idx)
         self.critic.load_state_dict(
-            torch.load(filename + "TD3" + idx + ep + "_critic.pth")
+            torch.load(filename + "TD3" + idx + ep + "_critic.pth", weights_only=True)
         )
         self.critic_optimizer.load_state_dict(
-            torch.load(filename + "TD3" + idx + ep + "_critic_optimizer.pth")
+            torch.load(filename + "TD3" + idx + ep + "_critic_optimizer.pth", weights_only=True)
         )
         self.actor.load_state_dict(
-            torch.load(filename + "TD3" + idx + ep + "_actor.pth")
+            torch.load(filename + "TD3" + idx + ep + "_actor.pth", weights_only=True)
         )
         self.actor_optimizer.load_state_dict(
-            torch.load(filename + "TD3" + idx + ep + "_actor_optimizer.pth")
+            torch.load(filename + "TD3" + idx + ep + "_actor_optimizer.pth", weights_only=True)
         )
         # target networks
         self.actor_target = copy.deepcopy(self.actor)
