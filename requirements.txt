@@ -6,4 +6,3 @@ colour
 trimesh
 pytest
 opencv-python
-pickle
