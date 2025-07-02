@@ -46,7 +46,7 @@ parser.add_argument('--control_mode', type=str, default="Ssurface_nref_nv")
 parser.add_argument('--reward_ratio', type=float, default=1e4)
 parser.add_argument('--k_yaw', type=str, default='[2, 1, 0.01]',help='Input list of length 2 (S-Surface) or 3 (PID)')
 parser.add_argument('--k_depth', type=str, default='[1, 1, 0.01]',help='Input list of length 2 (S-Surface) or 3 (PID)')
-parser.add_argument('--wave',action='store_true',help='Simualte JONSWAP wave and current.')
+parser.add_argument('--wave',type=float, default=0. ,help='Simualte JONSWAP wave and current.')
 parser.add_argument('--usbl',action='store_true',help='Simualte USV-AUV collaboration and USBL positioning.')
 
 

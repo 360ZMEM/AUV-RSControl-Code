@@ -28,7 +28,7 @@ class Env(object):
         self.step_size = args.step_size
         self.sim_step_size = args.sim_step_size
         self.N_sim = int(self.step_size / self.sim_step_size)
-        self.simulate_wave = args.wave; self.simulate_usbl = args.usbl
+        self.wave_amp = args.wave; self.simulate_usbl = args.usbl
         self.usbl = usv_usbl.USBL()
         self.reward_ok = True
         # NOTE NEW
@@ -189,7 +189,7 @@ class Env(object):
 
     def posit_change(self,actions,hovers,k_yaw, k_depth,rand_phase = None,control='Ssurface'):
         self.action = actions
-        if self.simulate_wave:
+        if self.wave_amp:
             Z, phase = wave.calculate_wave(self.border[0], self.border[1], self.Ft, rand_phase=rand_phase, resolution=self.wave_resolution)
 
         for i in range(self.N_AUV):
@@ -203,10 +203,11 @@ class Env(object):
             self.AUV[i].ref_z = z
             self.AUV[i].ref_psi = yaw * (180 / np.pi)  
             self.AUV[i].ref_n = desired_propeller
-            if self.simulate_wave:
+            if self.wave_amp:
                 # fix: constrain z to guarantee normal wave generation
                 h = terrain.get_terrain_height(self.X_max,self.Y_max,self.xy[i,0],self.xy[i,1])
                 U, V = wave.calculate_current(phase, constrain(0, self.xy[i, 2], h), h = h)
+                U *= self.wave_amp; V*= self.wave_amp
                 self.u_h[i], self.v_h[i] = wave.get_pointcurrent(U, V, self.border[0], self.border[1], self.xy[i,0], self.xy[i,1], resolution=self.wave_resolution)
                 vel_h, beta_h = np.sqrt(self.u_h[i] ** 2 + self.v_h[i] ** 2), np.arctan2(self.v_h[i], self.u_h[i])
                 self.AUV[i].V_c = vel_h; self.AUV[i].beta_c = beta_h

@@ -37,10 +37,10 @@ We provide implementations for two high-level underwater tasks described in the 
 Execute training with:
 
 ```bash
-python train_td3.py --wave --usbl
+python train_td3.py --wave 0.5 --usbl
 ```
 
-- `--wave`: Enables JONSWAP wave simulation.
+- `--wave`: JONSWAP wave amplitude. (Default: 0, namely disable)
 - `--usbl`: Enables USBL positioning noise (disable to use ground-truth positions).
 
 Additional hyperparameters (e.g., for control, simulation, TD3 algorithm) can be adjusted via command-line arguments. Refer to the source code for details.
