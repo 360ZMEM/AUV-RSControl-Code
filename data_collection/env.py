@@ -204,7 +204,9 @@ class Env(object):
             self.AUV[i].ref_psi = yaw * (180 / np.pi)  
             self.AUV[i].ref_n = desired_propeller
             if self.simulate_wave:
-                U, V = wave.calculate_current(phase, self.xy[i, 2], h = terrain.get_terrain_height(self.X_max,self.Y_max,self.xy[i,0],self.xy[i,1]))
+                # fix: constrain z to guarantee normal wave generation
+                h = terrain.get_terrain_height(self.X_max,self.Y_max,self.xy[i,0],self.xy[i,1])
+                U, V = wave.calculate_current(phase, constrain(0, self.xy[i, 2], h), h = h)
                 self.u_h[i], self.v_h[i] = wave.get_pointcurrent(U, V, self.border[0], self.border[1], self.xy[i,0], self.xy[i,1], resolution=self.wave_resolution)
                 vel_h, beta_h = np.sqrt(self.u_h[i] ** 2 + self.v_h[i] ** 2), np.arctan2(self.v_h[i], self.u_h[i])
                 self.AUV[i].V_c = vel_h; self.AUV[i].beta_c = beta_h
